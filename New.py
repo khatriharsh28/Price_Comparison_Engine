@@ -1,4 +1,5 @@
 from tkinter import *
+#from tkinter import _CanvasItemId
 from bs4 import BeautifulSoup
 import requests
 from difflib import get_close_matches
@@ -6,6 +7,7 @@ import webbrowser
 from collections import defaultdict
 import random
 from PIL import Image, ImageTk
+import time
 
 root = Tk()
 root.geometry("654x487+450+150")
@@ -21,19 +23,39 @@ root.config(bg='grey')
 # canvas.create_image(0, 0, anchor = NW, image=my_image)
 
 
-img = PhotoImage(file="LOGO1.png")
+img = PhotoImage(file="1.png")
 labelimg = Label(root, image=img)
 labelimg.place(x=0, y=0)
 
 class Price_compare:
 
     def __init__(self, master):
-        
-        self.var = StringVar()
+
+        def shift():
+            x1,y1,x2,y2 = canvas.bbox("marquee")
+            if(x2<0 or y1<0): #reset the coordinates
+                x1 = canvas.winfo_width()
+                y1 = canvas.winfo_height()//2
+                canvas.coords("marquee",x1,y1)
+            else:
+                canvas.move("marquee", -2, 0)
+            canvas.after(1000//fps,shift)
+
         self.var_ebay = StringVar()
         self.var_flipkart = StringVar()
         self.var_ebay = StringVar()
 
+        canvas=Canvas(root,bg='#BDEFEA')
+        canvas.pack()
+        text_var="Welcome to SPASH Price Comparison Engine."
+        text=canvas.create_text(0,-2000,text=text_var,font=('Stylus',20,'bold'),fill='black',tags=("marquee",),anchor='w')
+        x1,y1,x2,y2 = canvas.bbox("marquee")
+        width = x2-x1
+        height = y2-y1
+        canvas['width']=width
+        canvas['height']=height
+        fps=40    #Change the fps to make the animation faster/slower
+        shift()
 
         #Image
         # image = Image.open("LOGO.png")
@@ -48,15 +70,16 @@ class Price_compare:
         # # photo = ImageTk.PhotoImage(img)
         # # label1=Label(root, image=img, bd=5, height=450, width=650)
         # label1.grid(row=0, column=0, padx=20, pady=10)
+        # click_btn= PhotoImage(file='Continue.png')
+        # img_label= Label(image=click_btn)
+        # button= Button(root, image=click_btn,command= self.page1)
+        # button.pack(pady=30)
+        b_continue = Button(master, text = 'Click Me >>',command= self.page1)
+        # b_continue = Button(root, text = 'Click Me !', image = click_btn).pack(side = TOP)
+        b_continue.place(x = 280, y = 415, width=90,height=35)
         
-        b_continue = Button(master, text='Continue', bd=4,font=("Comic Sans MS", 15), command= self.page1 )
-        b_continue.place(x = 280, y = 150, width=90,height=35)
-        
-        
-
     def page1(self):
-        
-        
+        self.var = StringVar()
         self.pg1 = Toplevel(root)
         self.pg1.geometry("654x487+450+150")
         self.pg1.title('Price Comparison Engine')
@@ -82,12 +105,13 @@ class Price_compare:
         #entry.grid(row=3, column=5)
         entry.place(x = 330, y = 80, width=250,height=40)
         
-        button_find = Button(self.pg1, text='Find', bd=4,font=("Comic Sans MS", 15), command=self.find)
+        button_find = Button(self.pg1, text='Find',font=("Comic Sans MS", 15), command=self.find)
         # button_find.grid(row=4, column=5, sticky=W, pady=8)
         button_find.place(x = 280, y = 150, width=90,height=35)
         
 
     def find(self):
+        #page1.destroy()
         self.product = self.var.get()
         self.product_arr = self.product.split()
         self.n = 1
@@ -110,6 +134,7 @@ class Price_compare:
         self.window.title('Price Comparison Engine')
         label_title_flip = Label(self.window, text='Flipkart Title:')
         label_title_flip.grid(row=0, column=0, sticky=W)
+        self.pg1.destroy()
 
         label_flipkart = Label(self.window, text='Flipkart price (Rs):')
         label_flipkart.grid(row=2, column=0, sticky=W)
