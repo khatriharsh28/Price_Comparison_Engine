@@ -33,7 +33,7 @@ class Price_compare:
 
         canvas=Canvas(root,bg='#BDEFEA')
         canvas.pack()
-        text_var="Welcome to SPASH Price Comparison Engine."
+        text_var="Welcome to Price Comparison Engine."
         text=canvas.create_text(0,-2000,text=text_var,font=('Stylus',20,'bold'),fill='black',tags=("marquee",),anchor='w')
         x1,y1,x2,y2 = canvas.bbox("marquee")
         width = x2-x1
