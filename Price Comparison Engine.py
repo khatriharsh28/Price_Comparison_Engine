@@ -1,13 +1,9 @@
 from tkinter import *
-#from tkinter import _CanvasItemId
 from bs4 import BeautifulSoup
 import requests
 from difflib import get_close_matches
 import webbrowser
 from collections import defaultdict
-import random
-from PIL import Image, ImageTk
-import time
 
 root = Tk()
 root.geometry("654x487+450+150")
@@ -76,7 +72,10 @@ class Price_compare:
         self.pg1 = Toplevel(root)
         self.pg1.geometry("654x487+450+150")
         self.pg1.title('Price Comparison Engine')
-        # self.pg1.config(bg='white')
+        self.bg=PhotoImage(file="bg.png")
+        bg_label = Label(self.pg1, image = self.bg)
+        bg_label.place(x = 0, y = 0)
+        
         label = Label(self.pg1, text='Enter the product :-' , font=("Comic Sans MS", 15))
         label.place(x = 100, y = 80, width=200,height=40)
 
@@ -141,23 +140,25 @@ class Price_compare:
         self.window = Toplevel(root)
         self.window.geometry("654x487+450+150")
         self.window.title('Price Comparison Engine')
-        label_title_flip = Label(self.window, text='Flipkart Title:')
-        label_title_flip.grid(row=0, column=0, sticky=W)
+        
+        self.window.config(bg='white', padx=20, pady=65)
+        label_title_flip = Label(self.window, text='Flipkart Title:', bg='white')
+        label_title_flip.grid(row=0, column=0, pady=10, sticky=W)
 
-        label_flipkart = Label(self.window, text='Flipkart price (Rs):')
-        label_flipkart.grid(row=2, column=0, sticky=W)
+        label_flipkart = Label(self.window, text='Flipkart price :', bg='white')
+        label_flipkart.grid(row=2, column=0, pady=10, sticky=W)
 
-        entry_flipkart = Entry(self.window, textvariable=self.var_flipkart)
+        entry_flipkart = Entry(self.window, textvariable=self.var_flipkart, bg='white')
         entry_flipkart.grid(row=2, column=1, sticky=W)
         
-        label_title_ebay = Label(self.window, text='Ebay Title:')
-        label_title_ebay.grid(row=5, column=0, sticky=W)
+        label_title_ebay = Label(self.window, text='Ebay Title:', bg='white')
+        label_title_ebay.grid(row=5, column=0, pady=10, sticky=W)
 
-        label_ebay = Label(self.window, text='Ebay price (Rs):')
-        label_ebay.grid(row=7, column=0, sticky=W)
+        label_ebay = Label(self.window, text='Ebay price :', bg='white')
+        label_ebay.grid(row=7, column=0, pady=10, sticky=W)
 
-        entry_ebay = Entry(self.window, textvariable=self.var_ebay)
-        entry_ebay.grid(row=7, column=1, sticky=W)
+        entry_ebay = Entry(self.window, textvariable=self.var_ebay, bg='white')
+        entry_ebay.grid(row=7, column=1, pady=10, sticky=W)
         
         self.price_flipkart(self.key)
         
@@ -174,30 +175,32 @@ class Price_compare:
         try:
             option_ebay = OptionMenu(self.window, self.variable_ebay, *self.matches_ebay)
             option_ebay.grid(row=5, column=1, sticky=W)
-            lab_amz = Label(self.window, text='Not this? Try out suggestions by clicking on the title')
+            option_ebay.config(bg='white')
+            lab_amz = Label(self.window, text='Not this? Try out suggestions by clicking on the title', bg='white')
             lab_amz.grid(row=6, column=1, padx=4)
         except:
-            lab_amz = Label(self.window, text='Product not available')
+            lab_amz = Label(self.window, text='Product not available', bg='white')
             lab_amz.grid(row=6, column=2, padx=4)
 
         try:
             option_flip = OptionMenu(self.window, self.variable_flip, *self.matches_flip)
             option_flip.grid(row=0, column=1, sticky=W)
-            lab_flip = Label(self.window, text='Not this? Try out suggestions by clicking on the title')
+            option_flip.config(bg='white')
+            lab_flip = Label(self.window, text='Not this? Try out suggestions by clicking on the title', bg='white')
             lab_flip.grid(row=1, column=1, padx=4)
         except:
-            lab_amz = Label(self.window, text='Product not available')
-            lab_amz.grid(row=3, column=2, padx=4)
+            lab_amz = Label(self.window, text='Product not available', bg='white')
+            lab_amz.grid(row=1, column=2, padx=4)
         self.pg1.destroy()
         
-        button_search = Button(self.window, text='Search', command=self.search, bd=4)
-        button_search.grid(row=3, column=3, sticky=E, padx=30, pady=40)
+        button_search = Button(self.window, text='Check Price', command=self.search, bd=4)
+        button_search.grid(row=4, column=2, sticky=W, padx=10, pady=50)
 
         button_ebay_visit = Button(self.window, text='Visit Site', command=self.visit_ebay, bd=4)
-        button_ebay_visit.grid(row=7, column=2, sticky=W)
+        button_ebay_visit.grid(row=7, column=2, padx=30 ,sticky=W)
 
         button_flip_visit = Button(self.window, text='Visit Site', command=self.visit_flip, bd=4)
-        button_flip_visit.grid(row=2, column=2, sticky=W)
+        button_flip_visit.grid(row=2, column=2, padx=30, sticky=W)
 
     def price_flipkart(self, key):
         url_flip = 'https://www.flipkart.com/search?q=' + str(key) + '&marketplace=FLIPKART&otracker=start&as-show=on&as=off'
@@ -242,7 +245,7 @@ class Price_compare:
             "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
-        html = requests.get('https://www.ebay.com/sch/i.html?_nkw='+str(key), headers=headers).text
+        html = requests.get(url_ebay, headers=headers).text
         soup = BeautifulSoup(html, 'lxml')
         
         map = defaultdict(list)
