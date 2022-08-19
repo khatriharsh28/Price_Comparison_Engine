@@ -4,6 +4,7 @@ import requests
 from difflib import get_close_matches
 import webbrowser
 from collections import defaultdict
+from tkinter import messagebox
 
 root = Tk()
 root.geometry("654x487+450+150")
@@ -210,9 +211,11 @@ class Price_compare:
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         source_code = requests.get(url_flip, headers=self.headers)
         soup = BeautifulSoup(source_code.text, "html.parser")
-        
         self.opt_title_flip = StringVar()
         home = 'https://www.flipkart.com'
+        myblock = soup.find_all('div', {'class': '_2kHMtA'})
+        if(myblock==[]):
+            messagebox.showerror('Cant serve your request', 'Error: Please search only for products!')
         for block in soup.find_all('div', {'class': '_2kHMtA'}):
             title, price, link = None, 'Currently Unavailable', None
             for heading in block.find_all('div', {'class': '_4rR01T'}):
@@ -225,7 +228,8 @@ class Price_compare:
             map[title] = [price, link]
 
         user_input = self.var.get().title()
-        self.matches_flip = get_close_matches(user_input, map.keys(), 20, 0.1)
+        print(map)
+        self.matches_flip = get_close_matches(user_input, map.keys(), 20, 0.01)
         self.looktable_flip = {}
         for title in self.matches_flip:
             self.looktable_flip[title] = map[title]
@@ -238,7 +242,7 @@ class Price_compare:
             self.opt_title_flip.set('Product not found')
 
     def price_ebay(self, key):
-        url_ebay = 'https://www.ebay.com/sch/i.html?_nkw=' + str(key)
+        url_ebay = 'https://www.ebay.in/sch/i.html?_nkw=' + str(key)
                     
                     
         headers = {
@@ -249,10 +253,12 @@ class Price_compare:
         soup = BeautifulSoup(html, 'lxml')
         
         map = defaultdict(list)
-        home = 'https://www.ebay.com'
+        #home = 'https://www.ebay.com'
         
         self.opt_title = StringVar()
-        
+        myblock = soup.select('.s-item__wrapper.clearfix')
+        if(myblock==[]):
+            messagebox.showerror('Cant serve your request', 'Error: Please search only for products!')
         for item in soup.select('.s-item__wrapper.clearfix'):
             title, price, link = None, 'Currently Unavailable', None
             title = item.select_one('.s-item__title').text
